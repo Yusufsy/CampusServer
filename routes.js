@@ -15,7 +15,7 @@ router.post('/request-access-code', (req, res) => {
     path: '/transaction/initialize',
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY_TEST}`, 
+      Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`, 
       'Content-Type': 'application/json'
     }
   };
