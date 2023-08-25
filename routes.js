@@ -1,5 +1,5 @@
 const express = require('express');
-const https = require('https');
+const { getMessaging } = require("firebase-admin/messaging");
 
 const router = express.Router();
 
@@ -20,7 +20,7 @@ router.post('/request-access-code', (req, res) => {
     }
   };
 
-  const paystackReq = https.request(options, paystackRes => {
+  const paystackReq = request(options, paystackRes => {
     let data = '';
 
     paystackRes.on('data', chunk => {
@@ -41,6 +41,27 @@ router.post('/request-access-code', (req, res) => {
 
 router.get('/test', (req, res)=>{
     res.status(200).json({message: 'Connection OK'});
+});
+
+router.post('/order-confirm', (req, res)=>{
+const recievedToken = req.body.fcmToken;
+const message = {
+  notification: {
+    title: "Order Confirmed",
+    body: "Thank you for ordering!"
+  },
+  token: recievedToken
+}
+
+getMessaging().send(message).then((response)=>{
+  res.status(200).json({message: "Notification sent successfully", token: recievedToken});
+  console.log('Successfully sent message:', response);
+}).catch((error) => {
+  res.status(400);
+  res.send(error);
+  console.log('Error sending message:', error);
+});
+
 });
 
 module.exports = router;
