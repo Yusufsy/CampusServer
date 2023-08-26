@@ -1,5 +1,6 @@
 const express = require('express');
 const { getMessaging } = require("firebase-admin/messaging");
+const https = require('https');
 
 const router = express.Router();
 
@@ -15,12 +16,12 @@ router.post('/request-access-code', (req, res) => {
     path: '/transaction/initialize',
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`, 
+      Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY_TEST}`, 
       'Content-Type': 'application/json'
     }
   };
 
-  const paystackReq = request(options, paystackRes => {
+  const paystackReq = https.request(options, paystackRes => {
     let data = '';
 
     paystackRes.on('data', chunk => {
