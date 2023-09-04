@@ -1,6 +1,7 @@
 const express = require('express');
 const { getMessaging } = require("firebase-admin/messaging");
 const https = require('https');
+const nodemailer = require("nodemailer");
 
 const router = express.Router();
 
@@ -66,5 +67,38 @@ getMessaging().send(message).then((response)=>{
 });
 
 });
+
+router.post('/sale', (req, res)=>{
+  const amount = req.body.amount;
+  const orderId = req.body.orderId;
+  const method = req.body.method;
+
+  const transporter = nodemailer.createTransport({
+    host: "mail.sysoftware.ng",
+    port: 465,
+    secure: true,
+    auth: {
+      user: 'yusuf@sysoftware.ng',
+      pass: process.env.EMAIL_KEY
+    }
+  });
+
+  transporter.sendMail({
+    from: '"CampusDelight Server" <yusuf@sysoftware.ng>', // sender address
+    to: "yusufsunusi63@gmail.com, yusuf.sy@sysoftware.ng", // list of receivers
+    subject: `New Sale! ${method}`, // Subject line
+    text: "Amount: ${amount}, Method: <b>${method}</b>", // plain text body
+    html: `Amount: ${amount}<br>
+    Method: <b>${method}</b>`, // html body
+  }).then((response)=>{
+    res.status(200).json({message: "Email sent successfully", messageId: response.messageId});
+    console.log("Message sent: %s", response.messageId);
+  }).catch((error) => {
+    res.status(400);
+    res.send(error);
+    console.log('Error sending email:', error);
+  });
+  
+  });
 
 module.exports = router;
