@@ -2,6 +2,7 @@ const express = require('express');
 const { getMessaging } = require("firebase-admin/messaging");
 const https = require('https');
 const nodemailer = require("nodemailer");
+const { title } = require('process');
 
 const router = express.Router();
 
@@ -100,5 +101,40 @@ router.post('/sale', (req, res)=>{
   });
   
   });
+
+  router.post('/bjmls-submission', (req, res)=>{
+    const paperTitle = req.body.paperTitle;
+    const email = req.body.email;
+  
+    const transporter = nodemailer.createTransport({
+      host: "mail.sysoftware.ng",
+      port: 465,
+      secure: true,
+      auth: {
+        user: 'editor@bjmls.ng',
+        pass: process.env.BJMLS_KEY
+      }
+    });
+  
+    transporter.sendMail({
+      from: '"BJMLS Editor" <editor@bjmls.ng>', // sender address
+      to: email, // list of receivers
+      subject: `Submission Received`, // Subject line
+      text: `Thank you for your submission. This is to confirm that the submission for your paper titled "${paperTitle}" has 
+      been received and will be revieved`, // plain text body
+      html: `<h3>Thank you for your submission</h3><br>
+      Your paper titled:<br> <b>${paperTitle}</b><br>
+      Has been received and will undergo review. 
+      You will receive a notification regarding the status of your paper once the review is complete`, // html body
+    }).then((response)=>{
+      res.status(200).json({message: "Email sent successfully", messageId: response.messageId});
+      console.log("Message sent: %s", response.messageId);
+    }).catch((error) => {
+      res.status(400);
+      res.send(error);
+      console.log('Error sending email:', error);
+    });
+    
+    });
 
 module.exports = router;
