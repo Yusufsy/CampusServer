@@ -11,9 +11,9 @@ const app = express();
 app.use(bodyParser.json());
 
 const corsOptions = {
-  origin: 'https://bjmls-console.web.app', // Replace with your allowed origin(s)
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  credentials: true, // Enable cookies and credentials
+  origin: '*', 
+  methods: 'POST',
+  credentials: true, 
 };
 
 app.use(cors(corsOptions));
